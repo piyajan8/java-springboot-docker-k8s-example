@@ -1,0 +1,42 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: springboot-local
+  annotations:
+    config.kubernetes.io/local-config: "true"
+
+# Namespace for all resources
+namespace: springboot-local
+
+# Resources to include
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - deployment.yaml
+  - service.yaml
+
+# Common labels applied to all resources
+commonLabels:
+  app.kubernetes.io/name: java-springboot-app
+  app.kubernetes.io/instance: local
+  app.kubernetes.io/version: local
+  app.kubernetes.io/component: backend
+  app.kubernetes.io/part-of: springboot-example
+  app.kubernetes.io/managed-by: kustomize
+  environment: local
+
+# Images to use (can be overridden)
+images:
+  - name: java-springboot-docker-k8s-example
+    newTag: local
+
+# Patches for local development
+patches:
+  - target:
+      kind: Deployment
+      name: java-springboot-app-local
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/env/0/value
+        value: "dev"

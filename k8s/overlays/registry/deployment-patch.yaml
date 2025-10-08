@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-springboot-app
+spec:
+  # Production replica count
+  replicas: 3
+  template:
+    spec:
+      # Enable image pull secrets for private registries
+      imagePullSecrets:
+      - name: registry-secret
+      containers:
+      - name: java-springboot-app
+        # Always pull latest image from registry
+        imagePullPolicy: Always
+        # Production resource requirements
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        # Production-ready probe settings
+        startupProbe:
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 30
+        livenessProbe:
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 3

@@ -1,0 +1,77 @@
+# Spring Boot Application Configuration
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME:java-springboot-docker-k8s-example}
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  lifecycle:
+    timeout-per-shutdown-phase: ${SHUTDOWN_TIMEOUT:30s}
+
+# Server configuration
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: ${SERVER_SHUTDOWN:graceful}
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: false
+
+# Management and Actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${MANAGEMENT_ENDPOINTS:health,metrics,info,env}
+  endpoint:
+    health:
+      show-details: ${HEALTH_SHOW_DETAILS:always}
+      show-components: ${HEALTH_SHOW_COMPONENTS:always}
+  health:
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+    ping:
+      enabled: true
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: ${app.environment}
+      version: ${app.version}
+
+# Application information for monitoring
+info:
+  app:
+    name: '@project.name@'
+    description: '@project.description@'
+    version: '@project.version@'
+    encoding: '@project.build.sourceEncoding@'
+    java:
+      version: '@java.version@'
+
+# Custom application properties
+app:
+  version: ${APP_VERSION:@project.version@}
+  environment: ${APP_ENVIRONMENT:development}
+  debug-enabled: ${DEBUG_ENABLED:true}
+  health:
+    memory-threshold: ${HEALTH_MEMORY_THRESHOLD:90}
+    disk-threshold: ${HEALTH_DISK_THRESHOLD:85}
+  external-service:
+    timeout: ${EXTERNAL_SERVICE_TIMEOUT:5000}
+    retry-attempts: ${EXTERNAL_SERVICE_RETRY_ATTEMPTS:3}
+
+# Logging configuration
+logging:
+  level:
+    com.macode101: ${LOG_LEVEL:INFO}
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%X{correlationId:-}] %logger{36} - %msg%n'

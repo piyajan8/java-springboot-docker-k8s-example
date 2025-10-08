@@ -1,0 +1,36 @@
+# Production environment configuration
+# Server configuration for production
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-stacktrace: never
+    include-message: never
+
+# Management and Actuator configuration for production (limited exposure)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: when-authorized
+
+# Production-specific application properties
+app:
+  environment: production
+  debug-enabled: false
+  health:
+    memory-threshold: ${HEALTH_MEMORY_THRESHOLD:80}
+    disk-threshold: ${HEALTH_DISK_THRESHOLD:75}
+  external-service:
+    timeout: ${EXTERNAL_SERVICE_TIMEOUT:10000}
+    retry-attempts: ${EXTERNAL_SERVICE_RETRY_ATTEMPTS:5}
+
+# Logging configuration for production (JSON format via logback-spring.xml)
+logging:
+  level:
+    com.macode101: INFO
+    org.springframework.web: WARN
+    io.micrometer: WARN

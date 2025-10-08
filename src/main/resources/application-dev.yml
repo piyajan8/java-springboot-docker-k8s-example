@@ -1,0 +1,41 @@
+# Development environment configuration
+
+# Server configuration for development
+server:
+  port: 8080
+
+# Management configuration for development
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info,env,configprops,beans
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+
+# Development-specific application properties
+app:
+  environment: development
+  debug-enabled: true
+  health:
+    memory-threshold: 90
+    disk-threshold: 85
+  external-service:
+    timeout: 5000
+    retry-attempts: 3
+
+# Logging configuration for development
+logging:
+  level:
+    com.macode101: DEBUG
+    org.springframework.web: DEBUG
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} - %msg%n'
+
+# Database configuration (if needed in future)
+# spring:
+#   datasource:
+#     url: jdbc:h2:mem:devdb
+#     driver-class-name: org.h2.Driver

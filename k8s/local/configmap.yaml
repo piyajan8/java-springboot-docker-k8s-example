@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config-local
+  namespace: springboot-local
+  labels:
+    app: java-springboot-app
+    environment: local
+data:
+  # Application configuration for local development
+  spring.application.name: "java-springboot-docker-k8s-example"
+  app.environment: "local-kubernetes"
+  
+  # Logging configuration - more verbose for local development
+  logging.level: "DEBUG"
+  
+  # Health check thresholds - more lenient for local development
+  app.health.memory-threshold: "90"
+  app.health.disk-threshold: "85"
+  
+  # External service configuration - shorter timeouts for faster feedback
+  app.external-service.timeout: "5000"
+  app.external-service.retry-attempts: "3"
+  
+  # Management endpoints - expose more endpoints for local debugging
+  management.endpoints: "health,metrics,info,env,configprops,beans,loggers"
+  
+  # Additional application properties for local development
+  app.debug-enabled: "true"

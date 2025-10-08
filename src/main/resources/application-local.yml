@@ -1,0 +1,63 @@
+# Local development environment configuration
+# This profile is specifically for local Docker and Kubernetes development
+
+# Server configuration for local development
+server:
+  port: 8080
+
+# Management configuration for local development
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+    configprops:
+      show-values: always
+    env:
+      show-values: always
+  health:
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+    ping:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: local
+      version: local-dev
+
+# Spring configuration for local development
+spring:
+  jmx:
+    enabled: true
+
+# Local development-specific application properties
+app:
+  environment: local-development
+  debug-enabled: true
+  health:
+    memory-threshold: 95
+    disk-threshold: 90
+  external-service:
+    timeout: 3000
+    retry-attempts: 2
+
+# Logging configuration for local development - more verbose
+logging:
+  level:
+    com.macode101: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.boot.actuate: DEBUG
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%X{correlationId:-}] %logger{36} - %msg%n'
+
+# Security settings for local development (if security is added later)
+# management:
+#   security:
+#     enabled: false

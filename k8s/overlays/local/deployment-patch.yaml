@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-springboot-app
+spec:
+  # Reduce replicas for local development
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: java-springboot-app
+        # Use IfNotPresent for local images to avoid unnecessary pulls
+        imagePullPolicy: IfNotPresent
+        # Reduce resource requirements for local development
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+        # Faster startup for development
+        startupProbe:
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 12
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 20
+        readinessProbe:
+          initialDelaySeconds: 15
+          periodSeconds: 5

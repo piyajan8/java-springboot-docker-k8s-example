@@ -1,0 +1,31 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: java-springboot-app-registry
+
+# Reference the base configuration
+resources:
+- ../../
+
+# Registry-specific configuration
+# Update these values for your specific registry and version
+images:
+- name: java-springboot-docker-k8s-example
+  # Replace with your actual registry URL and image name
+  newName: your-registry.com/your-namespace/java-springboot-docker-k8s-example
+  newTag: v1.0.0
+
+# Patches for registry deployment
+patchesStrategicMerge:
+- deployment-patch.yaml
+
+# Production-ready labels
+commonLabels:
+  environment: production
+  deployment-type: registry
+  
+# Add annotations for deployment tracking
+commonAnnotations:
+  deployment.kubernetes.io/revision: "1"
+  app.kubernetes.io/version: "v1.0.0"

@@ -1,0 +1,40 @@
+# Exclude unnecessary files from Docker build context
+target/
+!target/*.jar
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git files
+.git/
+.gitignore
+
+# Documentation
+README.md
+docs/
+
+# Kubernetes manifests
+k8s/
+*.yaml
+*.yml
+
+# Docker files
+Dockerfile*
+docker-compose*
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Maven wrapper jar (we copy it explicitly in Dockerfile)
+.mvn/wrapper/maven-wrapper.jar

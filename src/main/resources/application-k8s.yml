@@ -1,0 +1,60 @@
+# Kubernetes environment configuration
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+# Server configuration for Kubernetes
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+
+# Management and Actuator configuration for Kubernetes
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: when-authorized
+      probes:
+        enabled: true
+      group:
+        liveness:
+          include: livenessState,diskSpace
+        readiness:
+          include: readinessState,diskSpace,ping
+    prometheus:
+      enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+      environment: ${app.environment}
+      version: ${app.version}
+
+# Kubernetes-specific application properties
+app:
+  environment: ${APP_ENVIRONMENT:kubernetes}
+  debug-enabled: ${DEBUG_ENABLED:false}
+  version: ${APP_VERSION:unknown}
+  health:
+    memory-threshold: ${HEALTH_MEMORY_THRESHOLD:80}
+    disk-threshold: ${HEALTH_DISK_THRESHOLD:75}
+  external-service:
+    timeout: ${EXTERNAL_SERVICE_TIMEOUT:10000}
+    retry-attempts: ${EXTERNAL_SERVICE_RETRY_ATTEMPTS:5}
+
+# Logging configuration for Kubernetes (JSON format via logback-spring.xml)
+logging:
+  level:
+    com.macode101: ${LOG_LEVEL:INFO}
+    io.micrometer: WARN

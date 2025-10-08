@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # Spring Boot application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    image: java-springboot-docker-k8s-example:local
+    container_name: springboot-app-local
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SERVER_PORT=8080
+      - MANAGEMENT_PORT=8080
+      - SPRING_APPLICATION_NAME=java-springboot-docker-k8s-example
+      - APP_ENVIRONMENT=local-docker
+      - LOG_LEVEL=DEBUG
+      - DEBUG_ENABLED=true
+      - HEALTH_MEMORY_THRESHOLD=90
+      - HEALTH_DISK_THRESHOLD=85
+      - EXTERNAL_SERVICE_TIMEOUT=5000
+      - EXTERNAL_SERVICE_RETRY_ATTEMPTS=3
+    volumes:
+      # Mount logs directory for local development
+      - ./logs:/app/logs
+    networks:
+      - springboot-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  # Optional: Add a simple database for local development (commented out by default)
+  # db:
+  #   image: postgres:15-alpine
+  #   container_name: springboot-db-local
+  #   environment:
+  #     - POSTGRES_DB=springboot_dev
+  #     - POSTGRES_USER=dev_user
+  #     - POSTGRES_PASSWORD=dev_password
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - springboot-network
+  #   restart: unless-stopped
+
+  # Optional: Add Redis for caching (commented out by default)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: springboot-redis-local
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - springboot-network
+  #   restart: unless-stopped
+
+networks:
+  springboot-network:
+    driver: bridge
+
+volumes:
+  # Uncomment if using PostgreSQL
+  # postgres_data:
+  logs:

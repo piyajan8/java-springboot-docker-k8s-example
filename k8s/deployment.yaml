@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-springboot-app
+  labels:
+    app: java-springboot-app
+    version: v1
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: java-springboot-app
+  template:
+    metadata:
+      labels:
+        app: java-springboot-app
+        version: v1
+    spec:
+      # Image pull secrets for private registries (uncomment if needed)
+      # imagePullSecrets:
+      # - name: registry-secret
+      containers:
+      - name: java-springboot-app
+        # Image will be updated by kustomization or deployment scripts
+        # For registry deployment, use format: registry.com/namespace/java-springboot-docker-k8s-example:version
+        image: java-springboot-docker-k8s-example:latest
+        # Use Always for registry images to ensure latest version is pulled
+        # Use IfNotPresent for local development
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "k8s"
+        - name: SERVER_PORT
+          value: "8080"
+        - name: MANAGEMENT_PORT
+          value: "8080"
+        - name: SPRING_APPLICATION_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: spring.application.name
+        - name: APP_ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: app.environment
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: logging.level
+        - name: HEALTH_MEMORY_THRESHOLD
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: app.health.memory-threshold
+        - name: HEALTH_DISK_THRESHOLD
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: app.health.disk-threshold
+        - name: EXTERNAL_SERVICE_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: app.external-service.timeout
+        - name: EXTERNAL_SERVICE_RETRY_ATTEMPTS
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: app.external-service.retry-attempts
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+        startupProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 30
+          successThreshold: 1
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
